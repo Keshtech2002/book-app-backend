@@ -18,8 +18,9 @@ app.use(
   helmet.contentSecurityPolicy({
     directives: {
       defaultSrc: ["'self'"],
-      imgSrc: ["'self'", 'data:'], // ✅ This allows base64 image loading
       scriptSrc: ["'self'"],
+      connectSrc: ["'self'", "https://book-app-backend-pied.vercel.app"],
+      imgSrc: ["'self'", "data:"],  // ✅ Allow base64 images
       objectSrc: ["'none'"],
       upgradeInsecureRequests: [],
     },
