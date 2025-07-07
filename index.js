@@ -1,11 +1,26 @@
 const express = require('express')
 const app = express()
 const cors = require("cors")
-const helmet = require('helmet');
 
 const mongoose = require('mongoose');
 const port = process.env.PORT || 5000
 require('dotenv').config()
+
+// --- CSP Middleware ---
+// Add this section after your other global middleware like express.json() and cors()
+app.use((req, res, next) => {
+  res.setHeader(
+    'Content-Security-Policy',
+    // Adjust these directives based on your specific needs
+    // 'self' allows resources from your own domain
+    // 'data:' specifically allows data URIs (like base64 encoded images)
+    // 'unsafe-inline' for style-src might be needed if you have inline <style> tags or styles injected by libraries
+    // 'unsafe-eval' for script-src should be avoided if possible, use only if absolutely necessary for specific libraries
+    "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'"
+  );
+  next(); // Essential to pass control to the next middleware/route handler
+});
+// --- End CSP Middleware ---
 
 //middleware
 app.use(express.json())
@@ -13,19 +28,6 @@ app.use(cors({
     origin: ['http://localhost:5173', 'https://book-app-frontend-two-smoky.vercel.app'],
     credentials: true
 }))
-
-app.use(
-  helmet.contentSecurityPolicy({
-    directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: ["'self'"],
-      connectSrc: ["'self'", "https://book-app-backend-pied.vercel.app"],
-      imgSrc: ["'self'", "data:"],  // ✅ Allow base64 images
-      objectSrc: ["'none'"],
-      upgradeInsecureRequests: [],
-    },
-  })
-);
 
 //routes 
 const bookRoutes = require('./src/books/book.route')
