@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 const cors = require("cors")
+const helmet = require('helmet');
 
 const mongoose = require('mongoose');
 const port = process.env.PORT || 5000
@@ -12,6 +13,18 @@ app.use(cors({
     origin: ['http://localhost:5173', 'https://book-app-frontend-two-smoky.vercel.app'],
     credentials: true
 }))
+
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'"],
+      imgSrc: ["'self'", 'data:'], // ✅ This allows base64 image loading
+      scriptSrc: ["'self'"],
+      objectSrc: ["'none'"],
+      upgradeInsecureRequests: [],
+    },
+  })
+);
 
 //routes 
 const bookRoutes = require('./src/books/book.route')
